@@ -8,9 +8,7 @@
 
 struct Vertex
 {
-	glm::vec3 position;
-	glm::vec3 normal;
-	glm::vec2 texCoord;
+	glm::vec2 position;
 	uint32_t  samplerID;
 
 	static VkVertexInputBindingDescription GetBindingDescription()
@@ -39,24 +37,6 @@ struct Vertex
 		// Add description to vector
 		attributeDescriptions.push_back( newDescription );
 
-		// Normal attribute
-		newDescription.binding	= 0;
-		newDescription.location = static_cast<uint32_t>( attributeDescriptions.size() );
-		newDescription.format	= VK_FORMAT_R32G32B32_SFLOAT;
-		newDescription.offset	= offsetof( Vertex, normal );
-
-		// Add description to vector
-		attributeDescriptions.push_back( newDescription );
-
-		// TexCoord attribute
-		newDescription.binding	= 0;
-		newDescription.location = static_cast<uint32_t>( attributeDescriptions.size() );
-		newDescription.format	= VK_FORMAT_R32G32_SFLOAT;
-		newDescription.offset	= offsetof( Vertex, texCoord );
-
-		// Add description to vector
-		attributeDescriptions.push_back( newDescription );
-
 		// SamplerID attribute
 		newDescription.binding	= 0;
 		newDescription.location = static_cast<uint32_t>( attributeDescriptions.size() );
@@ -71,6 +51,6 @@ struct Vertex
 
 	bool operator==( const Vertex& other ) const
 	{
-		return position == other.position && texCoord == other.texCoord && normal == other.normal && samplerID == other.samplerID;
+		return position == other.position && samplerID == other.samplerID;
 	}
 };

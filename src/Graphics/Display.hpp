@@ -8,42 +8,40 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 
+struct MVP
+{
+	glm::mat4 model;
+	glm::mat4 view;
+	glm::mat4 proj;
+};
+
 class Display
 {
 private:
-public:
-};
+	// uint16_t m_width;
+	// uint16_t m_height;
 
-// clang-format off
-const std::vector<Vertex> cubeVertices = {
-	{ { -0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f } },
-	{ {  0.5f, -0.5f, -0.5f }, { 0.0f, 0.0f } },
-	{ {  0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f } },
-	{ { -0.5f,  0.5f, -0.5f }, { 1.0f, 1.0f } },
-	{ { -0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f } },
-	{ {  0.5f, -0.5f,  0.5f }, { 0.0f, 0.0f } },
-	{ {  0.5f,  0.5f,  0.5f }, { 0.0f, 1.0f } },
-	{ { -0.5f,  0.5f,  0.5f }, { 1.0f, 1.0f } },
-	{ {  0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f } },
-	{ { -0.5f,  0.5f,  0.5f }, { 0.0f, 0.0f } },
-	{ { -0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f } },
-	{ { -0.5f, -0.5f, -0.5f }, { 1.0f, 1.0f } },
-	{ { -0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f } },
-	{ {  0.5f,  0.5f,  0.5f }, { 0.0f, 0.0f } },
-	{ {  0.5f, -0.5f, -0.5f }, { 0.0f, 1.0f } },
-	{ {  0.5f, -0.5f, -0.5f }, { 1.0f, 1.0f } }
+	MVP m_MVP;
+
+public:
+	void Init()
+	{
+		// Set the MVP matrix
+		m_MVP.model = glm::scale( glm::translate( glm::mat4( 1.0f ), glm::vec3( 0.0f, 0.0f, 0.0f ) ), glm::vec3( 100.0f, 100.0f, 100.0f ) );
+		m_MVP.view	= glm::mat4( 1.0f );
+		m_MVP.proj	= glm::ortho( 0.0f, static_cast<float>( WINDOW_WIDTH ), static_cast<float>( WINDOW_HEIGHT ), 0.0f, -5.0f, 5.0f );
+	}
+
+	const MVP& GetMVP() { return m_MVP; }
 };
 
 const std::vector<Vertex> quadVertices = {
-  {{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f}}  
+	{ { 0.0f, 0.0f } },
+	{ { 1.0f, 0.0f } },
+	{ { 1.0f, 1.0f } },
+	{ { 0.0f, 1.0f } }
 };
-// clang-format on
 
-const std::vector<IndexBufferType> cubeIndices = {
-	0, 2, 1, 2, 0, 3,	  // Front Face
-	4, 5, 6, 6, 7, 4,	  // Back Face
-	9, 10, 11, 11, 4, 9,  // Right Face
-	13, 15, 2, 15, 13, 8, // Left Face
-	11, 14, 5, 5, 4, 11,  // Bottom Face
-	3, 13, 2, 13, 3, 12	  // Top Face
+const std::vector<IndexBufferType> quadIndices = {
+	0, 1, 2, 2, 3, 0
 };

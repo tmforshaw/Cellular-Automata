@@ -5,6 +5,7 @@
 #include "Descriptors/DescriptorCollection.hpp"
 #include "Descriptors/DescriptorPool.hpp"
 #include "Descriptors/DescriptorSetLayout.hpp"
+#include "Graphics/Display.hpp"
 #include "Graphics/Images.hpp"
 #include "Graphics/Multisampling.hpp"
 #include "Graphics/Shaders.hpp"
@@ -74,6 +75,8 @@ private:
 	Image						 m_depthImage;
 	Image						 m_colourImage;
 	VkSampleCountFlagBits		 m_msaaSampleCount;
+
+	Display m_display;
 
 	bool m_framebufferResized;
 
@@ -148,6 +151,9 @@ private:
 
 		// Create the semaphores and fences
 		CreateSyncObjects();
+
+		// Initialise display
+		m_display.Init();
 	}
 
 	void InitWindow()
@@ -887,10 +893,14 @@ private:
 		// Define a indices vector
 		std::vector<IndexBufferType> indices {};
 
-		// Create an offset for the indices;
-		IndexBufferType offset = 0;
+		// // Create an offset for the indices;
+		// IndexBufferType offset = 0;
 
-		// Add indices and vertices here
+		// Add indices and vertices
+		vertices = quadVertices;
+		indices	 = quadIndices;
+
+		m_indicesCount = indices.size();
 
 		// Create a vertex buffer using a staging buffer
 		CreateBufferViaStagingBuffer( m_logicalDevice, m_physicalDevice, m_commandPool, m_graphicsQueue, vertices.size() * sizeof( Vertex ), vertices.data(),
@@ -909,10 +919,14 @@ private:
 		// Define a indices vector
 		std::vector<IndexBufferType> indices {};
 
-		// Create an offset for the indices;
-		IndexBufferType offset = 0;
+		// // Create an offset for the indices;
+		// IndexBufferType offset = 0;
 
-		// Add indices and vertices here
+		// Add indices and vertices
+		vertices = quadVertices;
+		indices	 = quadIndices;
+
+		m_indicesCount = indices.size();
 
 		// Update the vertex buffer
 		UpdateBufferViaStagingBuffer( m_logicalDevice, m_physicalDevice, m_commandPool, m_graphicsQueue, vertices.size() * sizeof( Vertex ), vertices.data(), &m_vertexBuffer );
@@ -1159,31 +1173,21 @@ private:
 
 	void UpdateUniformBuffer( const uint32_t& currentImage )
 	{
-		// std::cout << ( 1 / deltaT ) << std::endl;
-
-		// std::stringstream ss;
-		// ss << WINDOW_TITLE << '\t' << 1 / deltaT << "FPS";
-
-		// glfwSetWindowTitle( m_window, ss.str().c_str() );
-
 		// Process the inputs
 		ProcessCallbacks();
 		KeyboardHandler::ProcessInput( m_window, deltaT );
 
-		// VertexUniformBufferObject vertUBO = m_camera.GetMVP();
-		// vertUBO.lightColour				  = m_pointLights[0].GetCol();
-		// vertUBO.lightPosition			  = m_pointLights[0].GetPos();
+		VertexUniformBufferObject vertUBO {};
+		vertUBO.colour = glm::vec4( 1.0f, 0.0f, 1.0f, 1.0f );
+		vertUBO.model  = m_display.GetMVP().model;
+		vertUBO.view   = m_display.GetMVP().view;
+		vertUBO.proj   = m_display.GetMVP().proj;
 
-		// // Copy the data into the uniform buffer
-		// void* mappedMemPtr;
-		// vkMapMemory( m_logicalDevice, m_vertexUniformBufferObjectMemory[currentImage], 0, sizeof( vertUBO ), 0, &mappedMemPtr );
-		// memcpy( mappedMemPtr, &vertUBO, sizeof( vertUBO ) );
-		// vkUnmapMemory( m_logicalDevice, m_vertexUniformBufferObjectMemory[currentImage] );
-
-		// // Copy the data into the uniform buffer
-		// vkMapMemory( m_logicalDevice, m_fragmentUniformBufferObjectMemory[currentImage], 0, sizeof( *m_pointLights.data() ), 0, &mappedMemPtr );
-		// memcpy( mappedMemPtr, m_pointLights.data(), sizeof( *m_pointLights.data() ) );
-		// vkUnmapMemory( m_logicalDevice, m_fragmentUniformBufferObjectMemory[currentImage] );
+		// Copy the data into the uniform buffer
+		void* mappedMemPtr;
+		vkMapMemory( m_logicalDevice, m_vertexUniformBufferObjectMemory[currentImage], 0, sizeof( vertUBO ), 0, &mappedMemPtr );
+		memcpy( mappedMemPtr, &vertUBO, sizeof( vertUBO ) );
+		vkUnmapMemory( m_logicalDevice, m_vertexUniformBufferObjectMemory[currentImage] );
 	}
 
 	void MainLoop()
